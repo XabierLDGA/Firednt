@@ -1,5 +1,7 @@
 # firednt
 
+[![CI](https://github.com/XabierLDGA/Firednt/actions/workflows/ci.yml/badge.svg)](https://github.com/XabierLDGA/Firednt/actions/workflows/ci.yml)
+
 Plataforma web personal para gestionar proyectos de software desarrollados con IA.
 
 - Visión y alcance del MVP: [docs/vision.md](docs/vision.md)
