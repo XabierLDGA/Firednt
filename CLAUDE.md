@@ -82,4 +82,17 @@ Adaptar la formalidad: una corrección pequeña no necesita el mismo proceso que
 
 ## Comandos del proyecto
 
-_Pendiente: se completará cuando se elija el stack (instalar, desarrollo, tests, lint, build)._
+Stack: Next.js 16 (App Router) + TypeScript + Tailwind CSS v4 + Vitest. Detalle en `docs/architecture.md`.
+
+```bash
+npm install          # instalar dependencias
+npm run dev          # servidor de desarrollo en http://localhost:3000
+npm test             # tests (Vitest, una pasada)
+npm run lint         # ESLint
+npm run typecheck    # genera tipos de rutas y ejecuta tsc
+npm run build        # build de producción
+```
+
+Antes de dar un cambio por bueno: `lint`, `typecheck`, `test` y `build` deben pasar.
+
+Next.js 16 es posterior a los datos de entrenamiento de Claude: antes de escribir código de Next, consultar la guía correspondiente en `node_modules/next/dist/docs/` (ver `AGENTS.md`).
