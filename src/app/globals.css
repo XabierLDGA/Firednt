@@ -1,26 +1,74 @@
 @import "tailwindcss";
 
+/* Design tokens inspired by Twenty CRM (twenty-ui/design-tokens):
+   neutral grays, subtle borders, indigo accent and a compact 13px base. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --page: #ffffff;
+  --subtle: #fcfcfc;
+  --muted: #f1f1f1;
+  --active: #ebebeb;
+  --line: #ebebeb;
+  --line-strong: #d6d6d6;
+  --fg: #333333;
+  --fg-secondary: #666666;
+  --fg-tertiary: #999999;
+  --accent: #3e63dd;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --page: #171717;
+    --subtle: #1b1b1b;
+    --muted: #1d1d1d;
+    --active: #222222;
+    --line: #222222;
+    --line-strong: #484848;
+    --fg: #ebebeb;
+    --fg-secondary: #b3b3b3;
+    --fg-tertiary: #818181;
+    --accent: #5a75e0;
+  }
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-subtle: var(--subtle);
+  --color-muted: var(--muted);
+  --color-active: var(--active);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-tertiary: var(--fg-tertiary);
+  --color-accent: var(--accent);
+
+  --font-sans: var(--font-inter), sans-serif;
+
+  /* Twenty's type scale, relative to the 13px root. */
+  --text-xs: 0.85rem;
+  --text-sm: 0.92rem;
+  --text-base: 1rem;
+  --text-lg: 1.23rem;
+  --text-xl: 1.54rem;
+  --text-2xl: 1.85rem;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+}
+
+html {
+  font-size: 13px;
+}
+
+/* Slightly larger base on phones, like Twenty. */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background: var(--page);
+  color: var(--fg);
+  font-family: var(--font-sans);
 }
