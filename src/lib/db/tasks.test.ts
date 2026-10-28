@@ -2,7 +2,14 @@
 import { beforeEach, describe, expect, test } from "vitest";
 import type { Db } from "./client.ts";
 import { createProject, deleteProject } from "./projects.ts";
-import { createTask, deleteTask, getTask, listTasks, updateTask } from "./tasks.ts";
+import {
+  createTask,
+  deleteTask,
+  getTask,
+  listTasks,
+  moveTask,
+  updateTask,
+} from "./tasks.ts";
 import { createTestDb } from "./test-db.ts";
 
 let db: Db;
@@ -48,6 +55,31 @@ describe("tasks data access", () => {
     const updated = await updateTask(db, task.id, { status: "DONE" });
 
     expect(updated?.status).toBe("DONE");
+  });
+
+  test("moving a task changes its status and puts it last in the project", async () => {
+    const first = await createTask(db, projectId, { title: "First" });
+    await createTask(db, projectId, { title: "Second" });
+    const other = await createProject(db, { name: "Other" });
+    for (const title of ["A", "B", "C"]) await createTask(db, other.id, { title });
+
+    const moved = await moveTask(db, first.id, "DOING");
+
+    // Last of its own project (positions 0-1), not of the other one (0-2).
+    expect(moved).toMatchObject({ status: "DOING", position: 2 });
+  });
+
+  test("moving to the current status changes nothing", async () => {
+    const task = await createTask(db, projectId, { title: "Stay" });
+    await createTask(db, projectId, { title: "Later" });
+
+    const moved = await moveTask(db, task.id, "TODO");
+
+    expect(moved).toMatchObject({ status: "TODO", position: 0 });
+  });
+
+  test("moving a missing task returns undefined", async () => {
+    expect(await moveTask(db, 999, "DONE")).toBeUndefined();
   });
 
   test("deletes a task", async () => {

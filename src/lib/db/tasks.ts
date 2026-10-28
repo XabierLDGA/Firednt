@@ -1,6 +1,6 @@
-import { asc, eq, max } from "drizzle-orm";
+import { and, asc, eq, max, ne, sql } from "drizzle-orm";
 import type { Db } from "./client.ts";
-import { tasks, type NewTask, type Task } from "./schema.ts";
+import { tasks, type NewTask, type Task, type TaskStatus } from "./schema.ts";
 
 export type TaskInput = Pick<NewTask, "title" | "description" | "status">;
 
@@ -46,6 +46,25 @@ export async function updateTask(
     .where(eq(tasks.id, id))
     .returning();
   return task;
+}
+
+// Changes the status and puts the task last in its new column. One UPDATE
+// with a subquery, so reading the last position and writing it is atomic.
+export async function moveTask(
+  db: Db,
+  id: number,
+  status: TaskStatus,
+): Promise<Task | undefined> {
+  const [task] = await db
+    .update(tasks)
+    .set({
+      status,
+      position: sql`(select coalesce(max(other.position), -1) + 1 from ${tasks} as other where other.project_id = ${tasks.projectId})`,
+    })
+    .where(and(eq(tasks.id, id), ne(tasks.status, status)))
+    .returning();
+  // Nothing updated: the task is missing or already has that status.
+  return task ?? getTask(db, id);
 }
 
 export async function deleteTask(db: Db, id: number): Promise<boolean> {
