@@ -1,4 +1,4 @@
-import { and, asc, eq, max, ne, sql } from "drizzle-orm";
+import { and, asc, count, eq, max, ne, sql } from "drizzle-orm";
 import type { Db } from "./client.ts";
 import { tasks, type NewTask, type Task, type TaskStatus } from "./schema.ts";
 
@@ -10,6 +10,22 @@ export function listTasks(db: Db, projectId: number): Promise<Task[]> {
     .from(tasks)
     .where(eq(tasks.projectId, projectId))
     .orderBy(asc(tasks.position), asc(tasks.id));
+}
+
+export type TaskCounts = { done: number; total: number };
+
+// Done and total tasks per project, in one query. Projects without tasks
+// are not in the map.
+export async function countTasksByProject(db: Db): Promise<Map<number, TaskCounts>> {
+  const rows = await db
+    .select({
+      projectId: tasks.projectId,
+      total: count(),
+      done: sql<number>`sum(case when ${tasks.status} = 'DONE' then 1 else 0 end)`,
+    })
+    .from(tasks)
+    .groupBy(tasks.projectId);
+  return new Map(rows.map(({ projectId, done, total }) => [projectId, { done, total }]));
 }
 
 export async function getTask(db: Db, id: number): Promise<Task | undefined> {
