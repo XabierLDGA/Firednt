@@ -1,6 +1,6 @@
 # Arquitectura — firednt
 
-> Estado: esqueleto, layout, base de datos y gestión de proyectos, tareas, tablero Kanban y progreso (Issues #1, #5, #6, #7, #8, #9 y #10). Este documento crecerá a medida que se añadan funcionalidades.
+> Estado: esqueleto, layout, base de datos y MVP v0.1 completo: proyectos, tareas, tablero Kanban, progreso y dashboard (Issues #1 y #5–#11). Este documento crecerá a medida que se añadan funcionalidades.
 
 ## Stack
 
@@ -23,12 +23,14 @@ Motivos y alternativas: [ADR 0001](decisions/0001-stack-inicial.md) (stack) y [A
 src/
   app/              # UI: rutas (App Router), cada carpeta es una URL
     layout.tsx      # Layout raíz: <html>, fuentes, metadatos y cabecera
+    page.tsx        # Inicio: dashboard con el resumen de todo
     globals.css     # Tailwind y design tokens
     projects/       # Páginas de proyectos y tareas; Server Actions en actions.ts y task-actions.ts
   components/       # UI: componentes reutilizables
     ui.ts           # Clases compartidas de botones y campos
     field.tsx       # Etiqueta + campo + error de formulario
     confirm-delete-button.tsx  # Botón de eliminar con confirmación
+    dashboard/      # Vista del dashboard (recibe las estadísticas ya calculadas)
     projects/       # Formulario, badge de estado y barra de progreso de proyectos
     tasks/          # Lista, alta rápida, selector de estado, formulario y tablero Kanban
   lib/
@@ -36,6 +38,7 @@ src/
     ids.ts          # parseId(): ids de la URL a número
     projects/       # Lógica de proyectos: validación (Zod), etiquetas, límites y carga por id
     tasks/          # Lo mismo para tareas, más el tablero (board.ts) y el progreso (progress.ts)
+    dashboard/      # getDashboardStats(): cifras del dashboard en tres consultas
     db/             # Acceso a datos: lo único que habla con la base de datos
       index.ts      # getDb(): conexión de la app (lee DATABASE_URL)
       enums.ts      # Estados válidos, sin dependencias (usable en el navegador)
@@ -43,7 +46,8 @@ src/
       client.ts     # createDb(url): conexión
       projects.ts   # Repositorio de proyectos (CRUD)
       tasks.ts      # Repositorio de tareas (CRUD)
-      seed.ts       # Datos de ejemplo (npm run db:seed)
+      seed-data.ts  # seedDatabase(): datos de ejemplo, reutilizable en tests
+      seed.ts       # Script de npm run db:seed (llama a seedDatabase)
       test-db.ts    # BD en memoria con migraciones, para tests
 drizzle/            # Migraciones SQL generadas por drizzle-kit
 docs/               # Visión, arquitectura y ADRs
@@ -60,7 +64,7 @@ UI (`app/`, `components/`) → Server Actions (`app/**/*actions.ts`: validan con
 
 ### Next.js 16 y Cache Components
 
-- Las páginas de `/projects` exportan `instant = false` (en `app/projects/layout.tsx`): se renderizan en cada petición y pueden bloquear mientras leen la BD local, sin necesidad de `<Suspense>`.
+- Las páginas de `/projects` (en `app/projects/layout.tsx`) y la de inicio (`app/page.tsx`) exportan `instant = false`: se renderizan en cada petición y pueden bloquear mientras leen la BD local, sin necesidad de `<Suspense>`.
 - Las rutas con parámetro (`/projects/[id]`, `/projects/[id]/board`, `/projects/[id]/tasks/[taskId]/edit`) envían primero un esqueleto prerenderizado. Por eso un id inexistente muestra la página 404 con `noindex`, pero con código HTTP 200 (*soft 404*). Un 404 "real" requeriría comprobarlo en un Proxy.
 
 ### Tareas
@@ -83,6 +87,12 @@ UI (`app/`, `components/`) → Server Actions (`app/**/*actions.ts`: validan con
 - La lista de proyectos no carga las tareas: `countTasksByProject` cuenta hechas y totales de todos los proyectos en una sola consulta agregada, y `progressFromCounts` calcula el porcentaje.
 - Las acciones de tareas revalidan también `/projects` para que la lista muestre el progreso actualizado.
 
+### Dashboard
+
+- La página de inicio muestra los totales de proyectos y tareas por estado y los proyectos `En desarrollo` con su progreso. Si aún no hay proyectos, muestra un mensaje de bienvenida.
+- `getDashboardStats(db)` (`lib/dashboard/stats.ts`) reúne las cifras. Su test carga los datos del seed (`seedDatabase`) en una BD en memoria y comprueba las cifras exactas.
+- Cualquier acción de proyectos o tareas revalida también `/`.
+
 ## Convenciones
 
 - Los tests viven junto al archivo que prueban (`*.test.tsx`).
@@ -91,6 +101,7 @@ UI (`app/`, `components/`) → Server Actions (`app/**/*actions.ts`: validan con
 - Colores, tipografía y radios se usan a través de design tokens (`text-fg-secondary`, `border-line`…), definidos en `globals.css`.
 - Los estados se guardan como códigos en inglés (`IN_PROGRESS`); el texto visible para el usuario se traduce en la UI.
 - Los tests de base de datos usan el entorno `node` (`// @vitest-environment node`).
+- Los tests de componentes que renderizan más de una vez llaman a `afterEach(cleanup)`: con los globals de Vitest desactivados, Testing Library no desmonta solo.
 
 ## Pendiente (fuera de esta fase)
 
