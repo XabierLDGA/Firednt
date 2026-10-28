@@ -8,7 +8,7 @@ import {
   IconTrendingUp,
 } from "@/components/icons";
 import { Page } from "@/components/page";
-import { ProjectProgress } from "@/components/projects/project-progress";
+import { ProgressBar } from "@/components/progress-bar";
 import { Tag, TAG_CLASSES, TAG_SOLID_CLASSES } from "@/components/tag";
 import { buttonStyles } from "@/components/ui";
 import type { TagColor } from "@/lib/colors";
@@ -85,7 +85,7 @@ export function Dashboard({ stats }: { stats: DashboardStats }) {
                       </span>
                     )}
                     <span className="mt-auto flex flex-col gap-1">
-                      <ProjectProgress progress={progress} />
+                      <ProgressBar progress={progress} />
                       {progress && (
                         <span className="text-sm text-fg-tertiary">
                           {progress.done} de {progress.total} tareas hechas

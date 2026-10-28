@@ -100,3 +100,16 @@ export const IconAbc = icon([
 export const IconArrowLeft = icon(["M5 12h14", "M5 12l6 6", "M5 12l6 -6"]);
 
 export const IconArrowRight = icon(["M5 12h14", "M13 18l6 -6", "M13 6l6 6"]);
+
+export const IconSchool = icon([
+  "M22 9l-10 -4l-10 4l10 4l10 -4v6",
+  "M6 10.6v5.4a6 3 0 0 0 12 0v-5.4",
+]);
+
+export const IconCheck = icon(["M5 12l5 5l10 -10"]);
+
+export const IconExternalLink = icon([
+  "M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6",
+  "M11 13l9 -9",
+  "M15 4h5v5",
+]);

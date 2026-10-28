@@ -14,7 +14,7 @@ import {
   IconTrendingUp,
 } from "@/components/icons";
 import { Page } from "@/components/page";
-import { ProjectProgress } from "@/components/projects/project-progress";
+import { ProgressBar } from "@/components/progress-bar";
 import { ProjectStatusTag } from "@/components/projects/project-status-tag";
 import { buttonStyles } from "@/components/ui";
 import { getDb } from "@/lib/db";
@@ -96,7 +96,7 @@ export default async function ProjectsPage() {
                         <ProjectStatusTag status={project.status} />
                       </Td>
                       <Td>
-                        <ProjectProgress progress={progress} className="w-36" />
+                        <ProgressBar progress={progress} className="w-36" />
                       </Td>
                       <Td>
                         <span className="text-fg-secondary tabular-nums">

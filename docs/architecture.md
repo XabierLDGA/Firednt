@@ -26,6 +26,7 @@ src/
     page.tsx        # Inicio: dashboard con el resumen de todo
     globals.css     # Tailwind y design tokens
     projects/       # Páginas de proyectos y tareas; Server Actions en actions.ts y task-actions.ts
+    learning/       # Páginas de aprendizaje (temas y su checklist); Server Actions en actions.ts
   components/       # UI: componentes reutilizables
     ui.ts           # Clases compartidas de botones y campos
     page.tsx        # Estructura de cada pantalla: barra con icono, migas y acciones
@@ -34,10 +35,12 @@ src/
     avatar.tsx      # Inicial de un nombre sobre su color estable
     form-panel.tsx  # Panel de formulario y zona de borrado
     field.tsx       # Etiqueta + campo + error de formulario
-    confirm-delete-button.tsx  # Botón de eliminar con confirmación
+    confirm-delete-button.tsx  # Botón de eliminar con confirmación (normal o solo icono)
+    progress-bar.tsx  # Barra de progreso con porcentaje (tareas y aprendizaje)
     dashboard/      # Vista del dashboard (recibe las estadísticas ya calculadas)
-    projects/       # Formulario, etiqueta de estado, progreso y pestañas Lista/Tablero
+    projects/       # Formulario, etiqueta de estado y pestañas Lista/Tablero
     tasks/          # Lista, alta rápida, selector y etiqueta de estado, formulario y tablero
+    learning/       # Formulario de tema, alta rápida de elementos y checklist
   lib/
     site.ts         # Constantes de la app (nombre visible)
     colors.ts       # Paleta de etiquetas y color estable por nombre
@@ -45,6 +48,7 @@ src/
     ids.ts          # parseId(): ids de la URL a número
     projects/       # Lógica de proyectos: validación (Zod), etiquetas, límites y carga por id
     tasks/          # Lo mismo para tareas, más el tablero (board.ts) y el progreso (progress.ts)
+    learning/       # Lo mismo para temas y elementos de aprendizaje
     dashboard/      # getDashboardStats(): cifras del dashboard en tres consultas
     db/             # Acceso a datos: lo único que habla con la base de datos
       index.ts      # getDb(): conexión de la app (lee DATABASE_URL)
@@ -53,6 +57,7 @@ src/
       client.ts     # createDb(url): conexión
       projects.ts   # Repositorio de proyectos (CRUD)
       tasks.ts      # Repositorio de tareas (CRUD)
+      learning.ts   # Repositorio de temas y elementos de aprendizaje
       seed-data.ts  # seedDatabase(): datos de ejemplo, reutilizable en tests
       seed.ts       # Script de npm run db:seed (llama a seedDatabase)
       test-db.ts    # BD en memoria con migraciones, para tests
@@ -71,7 +76,7 @@ UI (`app/`, `components/`) → Server Actions (`app/**/*actions.ts`: validan con
 
 ### Next.js 16 y Cache Components
 
-- Las páginas de `/projects` (en `app/projects/layout.tsx`) y la de inicio (`app/page.tsx`) exportan `instant = false`: se renderizan en cada petición y pueden bloquear mientras leen la BD local, sin necesidad de `<Suspense>`.
+- Las páginas de `/projects` y `/learning` (en sus `layout.tsx`) y la de inicio (`app/page.tsx`) exportan `instant = false`: se renderizan en cada petición y pueden bloquear mientras leen la BD local, sin necesidad de `<Suspense>`.
 - Las rutas con parámetro (`/projects/[id]`, `/projects/[id]/board`, `/projects/[id]/tasks/[taskId]/edit`) envían primero un esqueleto prerenderizado. Por eso un id inexistente muestra la página 404 con `noindex`, pero con código HTTP 200 (*soft 404*). Un 404 "real" requeriría comprobarlo en un Proxy.
 
 ### Tareas
@@ -100,6 +105,15 @@ UI (`app/`, `components/`) → Server Actions (`app/**/*actions.ts`: validan con
 - `getDashboardStats(db)` (`lib/dashboard/stats.ts`) reúne las cifras. Su test carga los datos del seed (`seedDatabase`) en una BD en memoria y comprueba las cifras exactas.
 - Cualquier acción de proyectos o tareas revalida también `/`.
 
+### Aprendizaje
+
+- `/learning` (Issue #43): temas (p. ej. Docker) con una checklist de cosas que investigar. Cada elemento tiene un título, un enlace opcional y si ya está aprendido.
+- Tablas `learning_topics` y `learning_items`; al borrar un tema, la base de datos borra sus elementos (`ON DELETE CASCADE`).
+- **Marcar:** cada casilla es un botón de formulario que envía el valor nuevo (`done=true|false`), con `aria-pressed`. Funciona con teclado y sin JavaScript, y un doble envío no deshace la marca.
+- **Enlaces:** solo se aceptan `http` y `https`. Un enlace `javascript:` se mostraría como `<a href>` y ejecutaría código al pulsarlo. Se abren en otra pestaña con `rel="noopener noreferrer"`.
+- El progreso reutiliza `progressFromCounts` y `<ProgressBar>`; `countItemsByTopic` cuenta aprendidos y totales en una consulta.
+- El dashboard no incluye el aprendizaje por ahora.
+
 ## Diseño
 
 Inspirado en Twenty CRM (Issues #5 y #21). Capturas en [screenshots/](screenshots/).
@@ -108,7 +122,7 @@ Inspirado en Twenty CRM (Issues #5 y #21). Capturas en [screenshots/](screenshot
 - **Pantallas:** cada pantalla usa `<Page>`, con una barra superior (icono, migas, título y acciones; la principal en azul) y el contenido debajo.
 - **Etiquetas de estado:** cada estado tiene un color fijo (`PROJECT_STATUS_COLORS`, `TASK_STATUS_COLORS`) que se usa en etiquetas, selectores, columnas del tablero y barras del dashboard. La paleta (`--tag-*`) tiene versión clara y oscura en `globals.css`.
 - **Avatares:** inicial del nombre sobre un color derivado del propio nombre, siempre el mismo.
-- **Listas:** los proyectos se muestran en tabla, con cabeceras con icono. En pantallas estrechas, la tabla se desplaza dentro de su caja, nunca la página.
+- **Listas:** los proyectos se muestran en tabla, con cabeceras con icono; los temas de aprendizaje, en tarjetas. En pantallas estrechas, la tabla se desplaza dentro de su caja, nunca la página.
 - **Iconos:** SVG propios con trazos al estilo Tabler (el set de Twenty), para no añadir una dependencia.
 
 ## Convenciones

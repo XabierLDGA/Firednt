@@ -12,7 +12,7 @@ import {
   IconTrendingUp,
 } from "@/components/icons";
 import { Page } from "@/components/page";
-import { ProjectProgress } from "@/components/projects/project-progress";
+import { ProgressBar } from "@/components/progress-bar";
 import { ProjectStatusTag } from "@/components/projects/project-status-tag";
 import { ProjectTabs } from "@/components/projects/project-tabs";
 import { NewTaskForm } from "@/components/tasks/new-task-form";
@@ -59,7 +59,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[id]"
               <ProjectStatusTag status={project.status} />
             </Field>
             <Field icon={<IconTrendingUp size={14} />} label="Progreso">
-              <ProjectProgress progress={progress} />
+              <ProgressBar progress={progress} />
             </Field>
             <Field icon={<IconListCheck size={14} />} label="Tareas">
               {progress ? `${progress.done} de ${progress.total} hechas` : "Ninguna"}

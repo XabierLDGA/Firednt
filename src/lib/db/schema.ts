@@ -61,7 +61,38 @@ export const tasks = sqliteTable(
   ],
 );
 
+export const learningTopics = sqliteTable(
+  "learning_topics",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    name: text("name").notNull(),
+    description: text("description"),
+    ...timestamps,
+  },
+  (table) => [check("learning_topics_name_not_blank", sql`length(trim(${table.name})) > 0`)],
+);
+
+export const learningItems = sqliteTable(
+  "learning_items",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    topicId: integer("topic_id")
+      .notNull()
+      .references(() => learningTopics.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    url: text("url"),
+    done: integer("done", { mode: "boolean" }).notNull().default(false),
+    position: integer("position").notNull().default(0),
+    ...timestamps,
+  },
+  (table) => [check("learning_items_title_not_blank", sql`length(trim(${table.title})) > 0`)],
+);
+
 export type Project = typeof projects.$inferSelect;
 export type NewProject = typeof projects.$inferInsert;
 export type Task = typeof tasks.$inferSelect;
 export type NewTask = typeof tasks.$inferInsert;
+export type LearningTopic = typeof learningTopics.$inferSelect;
+export type NewLearningTopic = typeof learningTopics.$inferInsert;
+export type LearningItem = typeof learningItems.$inferSelect;
+export type NewLearningItem = typeof learningItems.$inferInsert;
