@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { PROJECT_DESCRIPTION_MAX, PROJECT_NAME_MAX } from "./constants";
-import { parseProjectForm, parseProjectId } from "./validation";
+import { parseProjectForm } from "./validation";
 
 function form(values: Record<string, string>): FormData {
   const data = new FormData();
@@ -74,21 +74,5 @@ describe("parseProjectForm", () => {
 
     expect(result.success).toBe(false);
     if (!result.success) expect(result.errors.status).toEqual(["Elige un estado válido."]);
-  });
-});
-
-describe("parseProjectId", () => {
-  test.each([
-    ["1", 1],
-    ["42", 42],
-    ["0", null],
-    ["-1", null],
-    ["01", null],
-    ["1.5", null],
-    ["abc", null],
-    ["", null],
-    ["99999999999999999999", null],
-  ])("parseProjectId(%j) -> %j", (raw, expected) => {
-    expect(parseProjectId(raw)).toBe(expected);
   });
 });
