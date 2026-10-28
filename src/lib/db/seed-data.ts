@@ -1,13 +1,22 @@
-// Sample data: three projects and the tasks of firedn't. Wipes existing
-// projects and tasks first. Used by `npm run db:seed` and by tests that
+// Sample data: three projects, the tasks of firedn't and a Docker learning
+// topic. Wipes all existing data first. Used by `npm run db:seed` and by tests that
 // check figures against these known data.
 import type { Db } from "./client.ts";
-import { projects, tasks, type NewTask } from "./schema.ts";
+import {
+  learningItems,
+  learningTopics,
+  projects,
+  tasks,
+  type NewLearningItem,
+  type NewTask,
+} from "./schema.ts";
 
 export async function seedDatabase(db: Db): Promise<void> {
   await db.transaction(async (tx) => {
     await tx.delete(tasks);
     await tx.delete(projects);
+    await tx.delete(learningItems);
+    await tx.delete(learningTopics);
 
     const [firednt] = await tx
       .insert(projects)
@@ -42,6 +51,30 @@ export async function seedDatabase(db: Db): Promise<void> {
         projectId: firednt.id,
         position,
       })),
+    );
+
+    const [docker] = await tx
+      .insert(learningTopics)
+      .values({
+        name: "Docker",
+        description: "Empaquetar y ejecutar mis proyectos en contenedores",
+      })
+      .returning();
+
+    const dockerItems: Omit<NewLearningItem, "topicId">[] = [
+      { title: "Qué es un contenedor y en qué se diferencia de una VM", done: true },
+      {
+        title: "Escribir un Dockerfile",
+        url: "https://docs.docker.com/get-started/docker-concepts/building-images/writing-a-dockerfile/",
+        done: true,
+      },
+      { title: "Volúmenes para guardar datos" },
+      { title: "Docker Compose", url: "https://docs.docker.com/compose/" },
+      { title: "Dockerizar firedn't" },
+    ];
+
+    await tx.insert(learningItems).values(
+      dockerItems.map((item, position) => ({ ...item, topicId: docker.id, position })),
     );
   });
 }
