@@ -17,6 +17,12 @@ export type ProjectFormState = {
   values?: ProjectFormValues;
 };
 
+// Projects appear on the list and in the dashboard counters.
+function revalidateProjectPages() {
+  revalidatePath("/");
+  revalidatePath("/projects");
+}
+
 export async function createProjectAction(
   _previous: ProjectFormState,
   formData: FormData,
@@ -25,7 +31,7 @@ export async function createProjectAction(
   if (!result.success) return { errors: result.errors, values: result.values };
 
   const project = await createProject(getDb(), result.data);
-  revalidatePath("/projects");
+  revalidateProjectPages();
   redirect(`/projects/${project.id}`);
 }
 
@@ -39,12 +45,12 @@ export async function updateProjectAction(
 
   const project = await updateProject(getDb(), id, result.data);
   if (!project) notFound();
-  revalidatePath("/projects");
+  revalidateProjectPages();
   redirect(`/projects/${id}`);
 }
 
 export async function deleteProjectAction(id: number): Promise<void> {
   await deleteProject(getDb(), id);
-  revalidatePath("/projects");
+  revalidateProjectPages();
   redirect("/projects");
 }
