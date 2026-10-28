@@ -29,7 +29,7 @@ npm run dev
 
 Abre <http://localhost:3000>.
 
-> ⚠️ `db:seed` **borra** todos los proyectos y tareas antes de cargar los de ejemplo. No lo ejecutes sobre datos reales.
+> ⚠️ `db:seed` solo funciona con la base de datos vacía. Si ya tiene datos, no toca nada y avisa. `npm run db:seed -- --force` los **borra todos** y carga los de ejemplo.
 
 ## Comandos
 
@@ -44,7 +44,7 @@ Abre <http://localhost:3000>.
 | `npm start` | Sirve el build de producción |
 | `npm run db:generate` | Crea una migración a partir de los cambios en `src/lib/db/schema.ts` |
 | `npm run db:migrate` | Aplica las migraciones pendientes a la base de datos |
-| `npm run db:seed` | Borra los datos y carga los de ejemplo |
+| `npm run db:seed` | Carga los datos de ejemplo (solo con la BD vacía; `-- --force` borra los existentes) |
 | `npm run db:studio` | Abre un visor de la base de datos en el navegador |
 
 ## Variables de entorno

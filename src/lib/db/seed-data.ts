@@ -11,6 +11,18 @@ import {
   type NewTask,
 } from "./schema.ts";
 
+// True when there is no user data. The seed script refuses to wipe a
+// database that has data unless told to with --force.
+export async function isDatabaseEmpty(db: Db): Promise<boolean> {
+  const counts = await Promise.all([
+    db.$count(projects),
+    db.$count(tasks),
+    db.$count(learningTopics),
+    db.$count(learningItems),
+  ]);
+  return counts.every((count) => count === 0);
+}
+
 export async function seedDatabase(db: Db): Promise<void> {
   await db.transaction(async (tx) => {
     await tx.delete(tasks);
