@@ -93,7 +93,7 @@ npm run typecheck    # genera tipos de rutas y ejecuta tsc
 npm run build        # build de producción
 npm run db:generate  # nueva migración tras cambiar src/lib/db/schema.ts
 npm run db:migrate   # aplicar migraciones
-npm run db:seed      # BORRA los datos y carga los de ejemplo
+npm run db:seed      # datos de ejemplo; solo con BD vacía (`-- --force` BORRA todo)
 ```
 
 Cambios de esquema: editar `schema.ts` → `db:generate` → revisar el SQL en `drizzle/` → `db:migrate`. Nunca editar a mano migraciones ya commiteadas.

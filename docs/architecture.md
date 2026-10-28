@@ -59,7 +59,7 @@ src/
       tasks.ts      # Repositorio de tareas (CRUD)
       learning.ts   # Repositorio de temas y elementos de aprendizaje
       seed-data.ts  # seedDatabase(): datos de ejemplo, reutilizable en tests
-      seed.ts       # Script de npm run db:seed (llama a seedDatabase)
+      seed.ts       # Script de npm run db:seed: se niega si la BD tiene datos, salvo con --force
       test-db.ts    # BD en memoria con migraciones, para tests
 drizzle/            # Migraciones SQL generadas por drizzle-kit
 docs/               # Visión, arquitectura y ADRs
