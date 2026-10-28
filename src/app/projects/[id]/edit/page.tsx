@@ -7,6 +7,9 @@ import { ProjectForm } from "@/components/projects/project-form";
 import { loadProjectOrNotFound } from "@/lib/projects/load";
 import { deleteProjectAction, updateProjectAction } from "../../actions";
 
+// Blocks while reading the local database; see app/projects/layout.tsx.
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Editar proyecto",
 };

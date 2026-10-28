@@ -9,6 +9,9 @@ import { getProject } from "@/lib/db/projects";
 import { loadTaskOrNotFound } from "@/lib/tasks/load";
 import { deleteTaskAction, updateTaskAction } from "../../../../task-actions";
 
+// Blocks while reading the local database; see app/projects/layout.tsx.
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Editar tarea",
 };

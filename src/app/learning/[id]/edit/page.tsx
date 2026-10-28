@@ -7,6 +7,9 @@ import { Page } from "@/components/page";
 import { loadTopicOrNotFound } from "@/lib/learning/load";
 import { deleteTopicAction, updateTopicAction } from "../../actions";
 
+// Blocks while reading the local database; see app/learning/layout.tsx.
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Editar tema",
 };

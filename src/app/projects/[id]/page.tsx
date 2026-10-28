@@ -25,6 +25,9 @@ import { loadProjectOrNotFound } from "@/lib/projects/load";
 import { calculateProgress } from "@/lib/tasks/progress";
 import { createTaskAction } from "../task-actions";
 
+// Blocks while reading the local database; see app/projects/layout.tsx.
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Proyecto",
 };
