@@ -28,13 +28,20 @@ src/
     projects/       # Páginas de proyectos y tareas; Server Actions en actions.ts y task-actions.ts
   components/       # UI: componentes reutilizables
     ui.ts           # Clases compartidas de botones y campos
+    page.tsx        # Estructura de cada pantalla: barra con icono, migas y acciones
+    icons.tsx       # Iconos SVG propios, al estilo Tabler (sin dependencia)
+    tag.tsx         # Etiqueta de color (fondo pastel + texto saturado)
+    avatar.tsx      # Inicial de un nombre sobre su color estable
+    form-panel.tsx  # Panel de formulario y zona de borrado
     field.tsx       # Etiqueta + campo + error de formulario
     confirm-delete-button.tsx  # Botón de eliminar con confirmación
     dashboard/      # Vista del dashboard (recibe las estadísticas ya calculadas)
-    projects/       # Formulario, badge de estado y barra de progreso de proyectos
-    tasks/          # Lista, alta rápida, selector de estado, formulario y tablero Kanban
+    projects/       # Formulario, etiqueta de estado, progreso y pestañas Lista/Tablero
+    tasks/          # Lista, alta rápida, selector y etiqueta de estado, formulario y tablero
   lib/
     site.ts         # Constantes de la app (nombre visible)
+    colors.ts       # Paleta de etiquetas y color estable por nombre
+    format.ts       # Formato de fechas ("28 oct 2026")
     ids.ts          # parseId(): ids de la URL a número
     projects/       # Lógica de proyectos: validación (Zod), etiquetas, límites y carga por id
     tasks/          # Lo mismo para tareas, más el tablero (board.ts) y el progreso (progress.ts)
@@ -92,6 +99,17 @@ UI (`app/`, `components/`) → Server Actions (`app/**/*actions.ts`: validan con
 - La página de inicio muestra los totales de proyectos y tareas por estado y los proyectos `En desarrollo` con su progreso. Si aún no hay proyectos, muestra un mensaje de bienvenida.
 - `getDashboardStats(db)` (`lib/dashboard/stats.ts`) reúne las cifras. Su test carga los datos del seed (`seedDatabase`) en una BD en memoria y comprueba las cifras exactas.
 - Cualquier acción de proyectos o tareas revalida también `/`.
+
+## Diseño
+
+Inspirado en Twenty CRM (Issues #5 y #21). Capturas en [screenshots/](screenshots/).
+
+- **Estructura:** barra lateral gris con la navegación y el contenido en un panel blanco con borde. En móvil, la barra lateral pasa a ser una barra superior.
+- **Pantallas:** cada pantalla usa `<Page>`, con una barra superior (icono, migas, título y acciones; la principal en azul) y el contenido debajo.
+- **Etiquetas de estado:** cada estado tiene un color fijo (`PROJECT_STATUS_COLORS`, `TASK_STATUS_COLORS`) que se usa en etiquetas, selectores, columnas del tablero y barras del dashboard. La paleta (`--tag-*`) tiene versión clara y oscura en `globals.css`.
+- **Avatares:** inicial del nombre sobre un color derivado del propio nombre, siempre el mismo.
+- **Listas:** los proyectos se muestran en tabla, con cabeceras con icono. En pantallas estrechas, la tabla se desplaza dentro de su caja, nunca la página.
+- **Iconos:** SVG propios con trazos al estilo Tabler (el set de Twenty), para no añadir una dependencia.
 
 ## Convenciones
 
