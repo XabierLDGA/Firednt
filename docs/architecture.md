@@ -1,6 +1,6 @@
 # Arquitectura — firednt
 
-> Estado: esqueleto, layout, base de datos y gestión de proyectos, tareas y tablero Kanban (Issues #1, #5, #6, #7, #8 y #9). Este documento crecerá a medida que se añadan funcionalidades.
+> Estado: esqueleto, layout, base de datos y gestión de proyectos, tareas, tablero Kanban y progreso (Issues #1, #5, #6, #7, #8, #9 y #10). Este documento crecerá a medida que se añadan funcionalidades.
 
 ## Stack
 
@@ -29,13 +29,13 @@ src/
     ui.ts           # Clases compartidas de botones y campos
     field.tsx       # Etiqueta + campo + error de formulario
     confirm-delete-button.tsx  # Botón de eliminar con confirmación
-    projects/       # Formulario y badge de estado de proyectos
+    projects/       # Formulario, badge de estado y barra de progreso de proyectos
     tasks/          # Lista, alta rápida, selector de estado, formulario y tablero Kanban
   lib/
     site.ts         # Constantes de la app (nombre visible)
     ids.ts          # parseId(): ids de la URL a número
     projects/       # Lógica de proyectos: validación (Zod), etiquetas, límites y carga por id
-    tasks/          # Lo mismo para tareas, más la agrupación por columnas del tablero
+    tasks/          # Lo mismo para tareas, más el tablero (board.ts) y el progreso (progress.ts)
     db/             # Acceso a datos: lo único que habla con la base de datos
       index.ts      # getDb(): conexión de la app (lee DATABASE_URL)
       enums.ts      # Estados válidos, sin dependencias (usable en el navegador)
@@ -75,6 +75,13 @@ UI (`app/`, `components/`) → Server Actions (`app/**/*actions.ts`: validan con
 - `/projects/[id]/board`: una columna por estado. En pantallas anchas van en paralelo y en móvil se apilan.
 - Cada tarjeta se mueve a la columna anterior o siguiente con botones de un formulario normal: el botón pulsado envía `status`. Funciona con teclado y sin JavaScript, sin Client Components.
 - Arrastrar y soltar queda fuera de alcance; necesitaría una librería como `dnd-kit`.
+
+### Progreso
+
+- `calculateProgress(tasks)` en `lib/tasks/progress.ts`: tareas `DONE` entre el total. Devuelve `null` si no hay tareas, y la UI muestra "Sin tareas" en lugar de 0 %.
+- Redondeo: al entero más cercano, pero solo se muestra 100 % con todas hechas y al menos 1 % con alguna hecha.
+- La lista de proyectos no carga las tareas: `countTasksByProject` cuenta hechas y totales de todos los proyectos en una sola consulta agregada, y `progressFromCounts` calcula el porcentaje.
+- Las acciones de tareas revalidan también `/projects` para que la lista muestre el progreso actualizado.
 
 ## Convenciones
 
