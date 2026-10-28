@@ -17,10 +17,15 @@ Plataforma web personal para gestionar proyectos de software desarrollados con I
 
 ```bash
 npm install
+cp .env.example .env.local   # configuración local (base de datos)
+npm run db:migrate           # crea la base de datos SQLite (firednt.db)
+npm run db:seed              # opcional: carga datos de ejemplo
 npm run dev
 ```
 
 Abre <http://localhost:3000>.
+
+> ⚠️ `db:seed` **borra** todos los proyectos y tareas antes de cargar los de ejemplo. No lo ejecutes sobre datos reales.
 
 ## Comandos
 
@@ -33,7 +38,15 @@ Abre <http://localhost:3000>.
 | `npm run typecheck` | Comprueba los tipos de TypeScript |
 | `npm run build` | Genera el build de producción |
 | `npm start` | Sirve el build de producción |
+| `npm run db:generate` | Crea una migración a partir de los cambios en `src/lib/db/schema.ts` |
+| `npm run db:migrate` | Aplica las migraciones pendientes a la base de datos |
+| `npm run db:seed` | Borra los datos y carga los de ejemplo |
+| `npm run db:studio` | Abre un visor de la base de datos en el navegador |
 
 ## Variables de entorno
 
-Copia `.env.example` a `.env.local` si en algún momento hace falta configurar algo. Ahora mismo no se necesita ninguna variable.
+Copia `.env.example` a `.env.local`. Variables:
+
+| Variable | Para qué | Valor por defecto |
+|---|---|---|
+| `DATABASE_URL` | Ubicación de la base de datos SQLite | `file:firednt.db` |

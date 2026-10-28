@@ -82,7 +82,7 @@ Adaptar la formalidad: una corrección pequeña no necesita el mismo proceso que
 
 ## Comandos del proyecto
 
-Stack: Next.js 16 (App Router) + TypeScript + Tailwind CSS v4 + Vitest. Detalle en `docs/architecture.md`.
+Stack: Next.js 16 (App Router) + TypeScript + Tailwind CSS v4 + Vitest + Drizzle ORM (SQLite local). Detalle en `docs/architecture.md`.
 
 ```bash
 npm install          # instalar dependencias
@@ -91,7 +91,12 @@ npm test             # tests (Vitest, una pasada)
 npm run lint         # ESLint
 npm run typecheck    # genera tipos de rutas y ejecuta tsc
 npm run build        # build de producción
+npm run db:generate  # nueva migración tras cambiar src/lib/db/schema.ts
+npm run db:migrate   # aplicar migraciones
+npm run db:seed      # BORRA los datos y carga los de ejemplo
 ```
+
+Cambios de esquema: editar `schema.ts` → `db:generate` → revisar el SQL en `drizzle/` → `db:migrate`. Nunca editar a mano migraciones ya commiteadas.
 
 Antes de dar un cambio por bueno: `lint`, `typecheck`, `test` y `build` deben pasar.
 
