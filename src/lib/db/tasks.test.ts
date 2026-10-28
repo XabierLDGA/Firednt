@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, test } from "vitest";
 import type { Db } from "./client.ts";
 import { createProject, deleteProject } from "./projects.ts";
 import {
+  countTasksByProject,
   createTask,
   deleteTask,
   getTask,
@@ -80,6 +81,21 @@ describe("tasks data access", () => {
 
   test("moving a missing task returns undefined", async () => {
     expect(await moveTask(db, 999, "DONE")).toBeUndefined();
+  });
+
+  test("counts done and total tasks per project", async () => {
+    const other = await createProject(db, { name: "Other" });
+    const empty = await createProject(db, { name: "Empty" });
+    await createTask(db, projectId, { title: "A", status: "DONE" });
+    await createTask(db, projectId, { title: "B", status: "DOING" });
+    await createTask(db, projectId, { title: "C", status: "DONE" });
+    await createTask(db, other.id, { title: "D" });
+
+    const counts = await countTasksByProject(db);
+
+    expect(counts.get(projectId)).toEqual({ done: 2, total: 3 });
+    expect(counts.get(other.id)).toEqual({ done: 0, total: 1 });
+    expect(counts.has(empty.id)).toBe(false);
   });
 
   test("deletes a task", async () => {

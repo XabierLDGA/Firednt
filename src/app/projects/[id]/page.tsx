@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ProjectProgress } from "@/components/projects/project-progress";
 import { StatusBadge } from "@/components/projects/status-badge";
 import { NewTaskForm } from "@/components/tasks/new-task-form";
 import { TaskList } from "@/components/tasks/task-list";
@@ -7,6 +8,7 @@ import { buttonStyles } from "@/components/ui";
 import { getDb } from "@/lib/db";
 import { listTasks } from "@/lib/db/tasks";
 import { loadProjectOrNotFound } from "@/lib/projects/load";
+import { calculateProgress } from "@/lib/tasks/progress";
 import { createTaskAction } from "../task-actions";
 
 export const metadata: Metadata = {
@@ -33,6 +35,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[id]"
           <div className="mt-2">
             <StatusBadge status={project.status} />
           </div>
+          <ProjectProgress progress={calculateProgress(tasks)} className="mt-3 w-64 max-w-full" />
         </div>
         <div className="flex gap-2">
           <Link href={`/projects/${project.id}/board`} className={buttonStyles.secondary}>
