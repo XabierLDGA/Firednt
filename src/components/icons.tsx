@@ -113,3 +113,21 @@ export const IconExternalLink = icon([
   "M11 13l9 -9",
   "M15 4h5v5",
 ]);
+
+export const IconDatabase = icon([
+  "M12 6m-8 0a8 3 0 1 0 16 0a8 3 0 1 0 -16 0",
+  "M4 6v6a8 3 0 0 0 16 0v-6",
+  "M4 12v6a8 3 0 0 0 16 0v-6",
+]);
+
+export const IconDownload = icon([
+  "M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2",
+  "M7 11l5 5l5 -5",
+  "M12 4l0 12",
+]);
+
+export const IconUpload = icon([
+  "M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2",
+  "M7 9l5 -5l5 5",
+  "M12 4l0 12",
+]);
