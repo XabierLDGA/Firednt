@@ -1,14 +1,23 @@
 import type { Progress } from "@/lib/tasks/progress";
 
-type ProjectProgressProps = {
+type ProgressBarProps = {
   progress: Progress | null;
   className?: string;
+  // Shown instead of the bar when there is nothing to count.
+  emptyLabel?: string;
+  // Read by screen readers after the counts: "4 de 6 tareas hechas".
+  doneLabel?: string;
 };
 
-// Bar plus percent. Projects without tasks show "Sin tareas".
-export function ProjectProgress({ progress, className = "" }: ProjectProgressProps) {
+// Bar plus percent, for project tasks and learning checklists.
+export function ProgressBar({
+  progress,
+  className = "",
+  emptyLabel = "Sin tareas",
+  doneLabel = "tareas hechas",
+}: ProgressBarProps) {
   if (!progress) {
-    return <p className={`text-sm text-fg-tertiary ${className}`}>Sin tareas</p>;
+    return <p className={`text-sm text-fg-tertiary ${className}`}>{emptyLabel}</p>;
   }
 
   const { done, total, percent } = progress;
@@ -20,7 +29,7 @@ export function ProjectProgress({ progress, className = "" }: ProjectProgressPro
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={percent}
-        aria-valuetext={`${percent} %, ${done} de ${total} tareas hechas`}
+        aria-valuetext={`${percent} %, ${done} de ${total} ${doneLabel}`}
         className="h-1.5 min-w-12 flex-1 overflow-hidden rounded-full bg-active"
       >
         <div
