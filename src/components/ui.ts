@@ -13,5 +13,8 @@ export const buttonStyles = {
 
 export const inputStyles = `w-full rounded-sm border border-line bg-page px-2 py-1.5 text-base text-fg placeholder:text-fg-tertiary aria-invalid:border-danger ${focus}`;
 
+// Small button for actions inside cards and list rows.
+export const compactButtonStyles = `inline-flex items-center gap-1 rounded-sm border border-line bg-page px-2 py-1 text-sm text-fg-secondary hover:bg-muted hover:text-fg ${focus}`;
+
 // Small inline select, for lists where a full-width control would be too big.
 export const compactSelectStyles = `rounded-sm border border-line bg-page px-1.5 py-0.5 text-sm text-fg-secondary hover:bg-muted ${focus}`;

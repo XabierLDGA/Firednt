@@ -1,6 +1,6 @@
 # Arquitectura — firednt
 
-> Estado: esqueleto, layout, base de datos y gestión de proyectos y tareas (Issues #1, #5, #6, #7 y #8). Este documento crecerá a medida que se añadan funcionalidades.
+> Estado: esqueleto, layout, base de datos y gestión de proyectos, tareas y tablero Kanban (Issues #1, #5, #6, #7, #8 y #9). Este documento crecerá a medida que se añadan funcionalidades.
 
 ## Stack
 
@@ -30,12 +30,12 @@ src/
     field.tsx       # Etiqueta + campo + error de formulario
     confirm-delete-button.tsx  # Botón de eliminar con confirmación
     projects/       # Formulario y badge de estado de proyectos
-    tasks/          # Lista, alta rápida, selector de estado y formulario de tareas
+    tasks/          # Lista, alta rápida, selector de estado, formulario y tablero Kanban
   lib/
     site.ts         # Constantes de la app (nombre visible)
     ids.ts          # parseId(): ids de la URL a número
     projects/       # Lógica de proyectos: validación (Zod), etiquetas, límites y carga por id
-    tasks/          # Lo mismo para tareas
+    tasks/          # Lo mismo para tareas, más la agrupación por columnas del tablero
     db/             # Acceso a datos: lo único que habla con la base de datos
       index.ts      # getDb(): conexión de la app (lee DATABASE_URL)
       enums.ts      # Estados válidos, sin dependencias (usable en el navegador)
@@ -61,13 +61,20 @@ UI (`app/`, `components/`) → Server Actions (`app/**/*actions.ts`: validan con
 ### Next.js 16 y Cache Components
 
 - Las páginas de `/projects` exportan `instant = false` (en `app/projects/layout.tsx`): se renderizan en cada petición y pueden bloquear mientras leen la BD local, sin necesidad de `<Suspense>`.
-- Las rutas con parámetro (`/projects/[id]`, `/projects/[id]/tasks/[taskId]/edit`) envían primero un esqueleto prerenderizado. Por eso un id inexistente muestra la página 404 con `noindex`, pero con código HTTP 200 (*soft 404*). Un 404 "real" requeriría comprobarlo en un Proxy.
+- Las rutas con parámetro (`/projects/[id]`, `/projects/[id]/board`, `/projects/[id]/tasks/[taskId]/edit`) envían primero un esqueleto prerenderizado. Por eso un id inexistente muestra la página 404 con `noindex`, pero con código HTTP 200 (*soft 404*). Un 404 "real" requeriría comprobarlo en un Proxy.
 
 ### Tareas
 
 - Se gestionan desde el detalle del proyecto: alta rápida (solo título, estado "Pendiente"), cambio de estado con un desplegable que guarda al cambiar y una página de edición para título, descripción, estado y borrado.
 - La edición carga la tarea con `loadTaskOrNotFound(projectId, taskId)`: si la tarea es de otro proyecto, responde 404. Así una URL no puede mezclar proyectos.
 - Al borrar un proyecto, la base de datos borra sus tareas (`ON DELETE CASCADE`).
+- **Orden:** `position` es correlativo dentro de cada proyecto. Cada columna muestra sus tareas ordenadas por `position`. Todo cambio de estado (desplegable, edición o tablero) pasa por `moveTask`, que coloca la tarea al final de su nueva columna con un único `UPDATE` atómico.
+
+### Tablero Kanban
+
+- `/projects/[id]/board`: una columna por estado. En pantallas anchas van en paralelo y en móvil se apilan.
+- Cada tarjeta se mueve a la columna anterior o siguiente con botones de un formulario normal: el botón pulsado envía `status`. Funciona con teclado y sin JavaScript, sin Client Components.
+- Arrastrar y soltar queda fuera de alcance; necesitaría una librería como `dnd-kit`.
 
 ## Convenciones
 

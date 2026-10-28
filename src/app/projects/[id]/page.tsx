@@ -34,9 +34,14 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[id]"
             <StatusBadge status={project.status} />
           </div>
         </div>
-        <Link href={`/projects/${project.id}/edit`} className={buttonStyles.secondary}>
-          Editar
-        </Link>
+        <div className="flex gap-2">
+          <Link href={`/projects/${project.id}/board`} className={buttonStyles.secondary}>
+            Tablero
+          </Link>
+          <Link href={`/projects/${project.id}/edit`} className={buttonStyles.secondary}>
+            Editar
+          </Link>
+        </div>
       </div>
 
       <p className="mt-6 max-w-2xl whitespace-pre-line text-fg-secondary">
