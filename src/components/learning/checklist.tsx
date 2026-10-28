@@ -50,7 +50,8 @@ export function Checklist({ items }: { items: LearningItem[] }) {
               className="inline-flex h-6 max-w-48 items-center gap-1 rounded-sm px-1.5 text-sm text-fg-tertiary hover:bg-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-accent"
             >
               <IconExternalLink size={14} />
-              <span className="truncate">{hostname(item.url)}</span>
+              {/* Icon only on narrow screens; the host stays as the link's name. */}
+              <span className="truncate max-sm:sr-only">{hostname(item.url)}</span>
             </a>
           )}
 

@@ -10,7 +10,7 @@ Plataforma web personal para gestionar proyectos de software desarrollados con I
 
 ![Tablero Kanban de un proyecto](docs/screenshots/board.png)
 
-Más capturas en [docs/screenshots/](docs/screenshots/): dashboard, lista de proyectos, detalle, modo oscuro y móvil.
+Más capturas en [docs/screenshots/](docs/screenshots/): dashboard, lista de proyectos, detalle, aprendizaje, modo oscuro y móvil.
 
 ## Requisitos
 
