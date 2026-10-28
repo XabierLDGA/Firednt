@@ -12,6 +12,11 @@ export function listTasks(db: Db, projectId: number): Promise<Task[]> {
     .orderBy(asc(tasks.position), asc(tasks.id));
 }
 
+export async function getTask(db: Db, id: number): Promise<Task | undefined> {
+  const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
+  return task;
+}
+
 // New tasks go to the end of the project's list.
 export async function createTask(
   db: Db,
