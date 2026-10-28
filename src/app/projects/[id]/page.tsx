@@ -1,12 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Avatar } from "@/components/avatar";
+import {
+  IconBriefcase,
+  IconCalendar,
+  IconClock,
+  IconListCheck,
+  IconPencil,
+  IconStatus,
+  IconText,
+  IconTrendingUp,
+} from "@/components/icons";
+import { Page } from "@/components/page";
 import { ProjectProgress } from "@/components/projects/project-progress";
-import { StatusBadge } from "@/components/projects/status-badge";
+import { ProjectStatusTag } from "@/components/projects/project-status-tag";
+import { ProjectTabs } from "@/components/projects/project-tabs";
 import { NewTaskForm } from "@/components/tasks/new-task-form";
 import { TaskList } from "@/components/tasks/task-list";
 import { buttonStyles } from "@/components/ui";
 import { getDb } from "@/lib/db";
 import { listTasks } from "@/lib/db/tasks";
+import { formatDate } from "@/lib/format";
 import { loadProjectOrNotFound } from "@/lib/projects/load";
 import { calculateProgress } from "@/lib/tasks/progress";
 import { createTaskAction } from "../task-actions";
@@ -15,62 +29,81 @@ export const metadata: Metadata = {
   title: "Proyecto",
 };
 
-const dateFormat = new Intl.DateTimeFormat("es-ES", { dateStyle: "medium" });
-
 export default async function ProjectPage({ params }: PageProps<"/projects/[id]">) {
   const project = await loadProjectOrNotFound((await params).id);
   const tasks = await listTasks(getDb(), project.id);
+  const progress = calculateProgress(tasks);
 
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
-      <Link href="/projects" className="text-sm text-fg-tertiary hover:text-fg">
-        ← Proyectos
-      </Link>
-
-      <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h1 className="text-xl font-semibold tracking-tight wrap-break-word">
-            {project.name}
-          </h1>
-          <div className="mt-2">
-            <StatusBadge status={project.status} />
+    <Page
+      icon={<IconBriefcase />}
+      crumbs={[{ label: "Proyectos", href: "/projects" }]}
+      title={project.name}
+      actions={
+        <Link href={`/projects/${project.id}/edit`} className={buttonStyles.secondary}>
+          <IconPencil size={14} />
+          Editar
+        </Link>
+      }
+    >
+      <div className="flex flex-1 flex-col lg:flex-row">
+        <aside className="shrink-0 border-b border-line p-4 lg:w-80 lg:border-r lg:border-b-0">
+          <div className="flex items-center gap-3">
+            <Avatar name={project.name} size="lg" />
+            <p className="min-w-0 text-lg font-semibold tracking-tight wrap-break-word">
+              {project.name}
+            </p>
           </div>
-          <ProjectProgress progress={calculateProgress(tasks)} className="mt-3 w-64 max-w-full" />
-        </div>
-        <div className="flex gap-2">
-          <Link href={`/projects/${project.id}/board`} className={buttonStyles.secondary}>
-            Tablero
-          </Link>
-          <Link href={`/projects/${project.id}/edit`} className={buttonStyles.secondary}>
-            Editar
-          </Link>
-        </div>
+          <dl className="mt-5 flex flex-col">
+            <Field icon={<IconStatus size={14} />} label="Estado">
+              <ProjectStatusTag status={project.status} />
+            </Field>
+            <Field icon={<IconTrendingUp size={14} />} label="Progreso">
+              <ProjectProgress progress={progress} />
+            </Field>
+            <Field icon={<IconListCheck size={14} />} label="Tareas">
+              {progress ? `${progress.done} de ${progress.total} hechas` : "Ninguna"}
+            </Field>
+            <Field icon={<IconText size={14} />} label="Descripción">
+              {project.description ?? <span className="text-fg-tertiary">Sin descripción</span>}
+            </Field>
+            <Field icon={<IconCalendar size={14} />} label="Creado">
+              {formatDate(project.createdAt)}
+            </Field>
+            <Field icon={<IconClock size={14} />} label="Actualizado">
+              {formatDate(project.updatedAt)}
+            </Field>
+          </dl>
+        </aside>
+
+        <section className="min-w-0 flex-1" aria-label="Tareas">
+          <ProjectTabs projectId={project.id} active="list" taskCount={tasks.length} />
+          <div className="flex flex-col gap-3 p-4">
+            <NewTaskForm action={createTaskAction.bind(null, project.id)} />
+            <TaskList tasks={tasks} />
+          </div>
+        </section>
       </div>
+    </Page>
+  );
+}
 
-      <p className="mt-6 max-w-2xl whitespace-pre-line text-fg-secondary">
-        {project.description ?? "Sin descripción."}
-      </p>
-
-      <dl className="mt-8 flex gap-8 text-sm">
-        <div>
-          <dt className="text-fg-tertiary">Creado</dt>
-          <dd className="text-fg-secondary">{dateFormat.format(project.createdAt)}</dd>
-        </div>
-        <div>
-          <dt className="text-fg-tertiary">Actualizado</dt>
-          <dd className="text-fg-secondary">{dateFormat.format(project.updatedAt)}</dd>
-        </div>
-      </dl>
-
-      <section className="mt-10 max-w-3xl" aria-labelledby="tasks-heading">
-        <h2 id="tasks-heading" className="font-medium text-fg">
-          Tareas <span className="font-normal text-fg-tertiary">{tasks.length}</span>
-        </h2>
-        <div className="mt-3 flex flex-col gap-3">
-          <NewTaskForm action={createTaskAction.bind(null, project.id)} />
-          <TaskList tasks={tasks} />
-        </div>
-      </section>
-    </main>
+function Field({
+  icon,
+  label,
+  children,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="grid grid-cols-[7.5rem_1fr] items-start gap-2 py-1.5">
+      <dt className="flex h-5 items-center gap-1.5 text-fg-tertiary">
+        {icon}
+        {label}
+      </dt>
+      <dd className="min-h-5 whitespace-pre-line text-fg wrap-break-word">{children}</dd>
+    </div>
   );
 }

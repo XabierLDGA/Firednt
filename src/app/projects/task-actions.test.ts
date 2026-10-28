@@ -49,6 +49,13 @@ describe("createTaskAction", () => {
     expect(task).toMatchObject({ title: "Nueva", status: "TODO", description: null });
   });
 
+  test("creates the task in the status sent by a board column", async () => {
+    await createTaskAction(projectId, {}, form({ title: "En marcha", status: "DOING" }));
+
+    const [task] = await listTasks(db, projectId);
+    expect(task).toMatchObject({ title: "En marcha", status: "DOING" });
+  });
+
   test("the task does not appear in other projects", async () => {
     const other = await createProject(db, { name: "Otro" });
 

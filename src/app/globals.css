@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
 /* Design tokens inspired by Twenty CRM (twenty-ui/design-tokens):
-   neutral grays, subtle borders, indigo accent and a compact 13px base. */
+   a grey app background with a white content panel, subtle borders,
+   indigo accent, pastel tags and a compact 13px base. */
 :root {
+  --app: #f3f3f3;
   --page: #ffffff;
-  --subtle: #fcfcfc;
+  --subtle: #fafafa;
   --muted: #f1f1f1;
   --active: #ebebeb;
   --line: #ebebeb;
@@ -13,26 +15,65 @@
   --fg-secondary: #666666;
   --fg-tertiary: #999999;
   --accent: #3e63dd;
+  --accent-hover: #3358d4;
   --danger: #dc3e42;
+
+  /* Tags: pastel background + saturated text, like Twenty's select chips. */
+  --tag-gray: #f0f0f0;
+  --tag-gray-fg: #646464;
+  --tag-blue: #edf2fe;
+  --tag-blue-fg: #3a5bc7;
+  --tag-sky: #e1f6fd;
+  --tag-sky-fg: #00749e;
+  --tag-yellow: #fffab8;
+  --tag-yellow-fg: #9e6c00;
+  --tag-orange: #ffefd6;
+  --tag-orange-fg: #cc4e00;
+  --tag-purple: #f7edfe;
+  --tag-purple-fg: #8145b5;
+  --tag-green: #e6f6eb;
+  --tag-green-fg: #218358;
+  --tag-red: #feebec;
+  --tag-red-fg: #ce2c31;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --page: #171717;
-    --subtle: #1b1b1b;
-    --muted: #1d1d1d;
-    --active: #222222;
-    --line: #222222;
+    --app: #141414;
+    --page: #1b1b1b;
+    --subtle: #1f1f1f;
+    --muted: #232323;
+    --active: #2a2a2a;
+    --line: #2a2a2a;
     --line-strong: #484848;
     --fg: #ebebeb;
     --fg-secondary: #b3b3b3;
     --fg-tertiary: #818181;
     --accent: #5a75e0;
+    --accent-hover: #6d85e6;
     --danger: #ec5d5e;
+
+    --tag-gray: #2a2a2a;
+    --tag-gray-fg: #b4b4b4;
+    --tag-blue: #182449;
+    --tag-blue-fg: #9eb1ff;
+    --tag-sky: #112840;
+    --tag-sky-fg: #75c7f0;
+    --tag-yellow: #2d2305;
+    --tag-yellow-fg: #f5e147;
+    --tag-orange: #331e0b;
+    --tag-orange-fg: #ffa057;
+    --tag-purple: #301c3b;
+    --tag-purple-fg: #d19dff;
+    --tag-green: #132d21;
+    --tag-green-fg: #71d083;
+    --tag-red: #3b1219;
+    --tag-red-fg: #ff9592;
   }
 }
 
 @theme inline {
+  --color-app: var(--app);
   --color-page: var(--page);
   --color-subtle: var(--subtle);
   --color-muted: var(--muted);
@@ -43,7 +84,25 @@
   --color-fg-secondary: var(--fg-secondary);
   --color-fg-tertiary: var(--fg-tertiary);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-danger: var(--danger);
+
+  --color-tag-gray: var(--tag-gray);
+  --color-tag-gray-fg: var(--tag-gray-fg);
+  --color-tag-blue: var(--tag-blue);
+  --color-tag-blue-fg: var(--tag-blue-fg);
+  --color-tag-sky: var(--tag-sky);
+  --color-tag-sky-fg: var(--tag-sky-fg);
+  --color-tag-yellow: var(--tag-yellow);
+  --color-tag-yellow-fg: var(--tag-yellow-fg);
+  --color-tag-orange: var(--tag-orange);
+  --color-tag-orange-fg: var(--tag-orange-fg);
+  --color-tag-purple: var(--tag-purple);
+  --color-tag-purple-fg: var(--tag-purple-fg);
+  --color-tag-green: var(--tag-green);
+  --color-tag-green-fg: var(--tag-green-fg);
+  --color-tag-red: var(--tag-red);
+  --color-tag-red-fg: var(--tag-red-fg);
 
   --font-sans: var(--font-inter), sans-serif;
 
@@ -71,7 +130,7 @@ html {
 }
 
 body {
-  background: var(--page);
+  background: var(--app);
   color: var(--fg);
   font-family: var(--font-sans);
 }

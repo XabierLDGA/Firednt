@@ -43,18 +43,23 @@ test("welcomes the user when there are no projects yet", () => {
   ).toBe("/projects/new");
 });
 
+// The number shown next to a status label inside a stat card.
+function countFor(card: HTMLElement, label: string) {
+  return within(card).getByText(label).closest("div")?.querySelector("dd")?.textContent;
+}
+
 test("shows totals and counts per status", () => {
   render(<Dashboard stats={stats} />);
 
-  const projects = within(screen.getByRole("region", { name: "Proyectos" }));
-  expect(projects.getByText("4")).toBeDefined();
-  expect(projects.getByText("En desarrollo").nextSibling?.textContent).toBe("2");
-  expect(projects.getByText("Terminado").nextSibling?.textContent).toBe("0");
+  const projects = screen.getByRole("region", { name: "Proyectos" });
+  expect(within(projects).getByText("4")).toBeDefined();
+  expect(countFor(projects, "En desarrollo")).toBe("2");
+  expect(countFor(projects, "Terminado")).toBe("0");
 
-  const tasks = within(screen.getByRole("region", { name: "Tareas" }));
-  expect(tasks.getByText("7")).toBeDefined();
-  expect(tasks.getByText("Pendiente").nextSibling?.textContent).toBe("3");
-  expect(tasks.getByText("Hecha").nextSibling?.textContent).toBe("3");
+  const tasks = screen.getByRole("region", { name: "Tareas" });
+  expect(within(tasks).getByText("7")).toBeDefined();
+  expect(countFor(tasks, "Pendiente")).toBe("3");
+  expect(countFor(tasks, "Hecha")).toBe("3");
 });
 
 test("links each in-progress project to its page, with its progress", () => {

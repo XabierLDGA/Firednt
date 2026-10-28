@@ -8,6 +8,10 @@ Plataforma web personal para gestionar proyectos de software desarrollados con I
 - Arquitectura y stack: [docs/architecture.md](docs/architecture.md)
 - Decisiones técnicas: [docs/decisions/](docs/decisions/)
 
+![Tablero Kanban de un proyecto](docs/screenshots/board.png)
+
+Más capturas en [docs/screenshots/](docs/screenshots/): dashboard, lista de proyectos, detalle, modo oscuro y móvil.
+
 ## Requisitos
 
 - Node.js 20.9 o superior (desarrollado con Node 24)
