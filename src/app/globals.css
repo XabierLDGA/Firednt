@@ -13,6 +13,7 @@
   --fg-secondary: #666666;
   --fg-tertiary: #999999;
   --accent: #3e63dd;
+  --danger: #dc3e42;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,6 +28,7 @@
     --fg-secondary: #b3b3b3;
     --fg-tertiary: #818181;
     --accent: #5a75e0;
+    --danger: #ec5d5e;
   }
 }
 
@@ -41,6 +43,7 @@
   --color-fg-secondary: var(--fg-secondary);
   --color-fg-tertiary: var(--fg-tertiary);
   --color-accent: var(--accent);
+  --color-danger: var(--danger);
 
   --font-sans: var(--font-inter), sans-serif;
 
