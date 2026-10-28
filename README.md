@@ -12,6 +12,10 @@ Plataforma web personal para gestionar proyectos de software desarrollados con I
 
 Más capturas en [docs/screenshots/](docs/screenshots/): dashboard, lista de proyectos, detalle, aprendizaje, modo oscuro y móvil.
 
+## Copia de seguridad
+
+Tus datos viven en un único archivo local (`firednt.db`, fuera de Git). En **Copia de seguridad** puedes descargar un JSON con todo y restaurarlo después. Haz una copia antes de cada `npm run db:migrate` y guárdala fuera del ordenador.
+
 ## Requisitos
 
 - Node.js 20.9 o superior (desarrollado con Node 24)

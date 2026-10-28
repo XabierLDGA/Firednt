@@ -27,6 +27,7 @@ src/
     globals.css     # Tailwind y design tokens
     projects/       # Páginas de proyectos y tareas; Server Actions en actions.ts y task-actions.ts
     learning/       # Páginas de aprendizaje (temas y su checklist); Server Actions en actions.ts
+    backup/         # Copia de seguridad: página, descarga (export/route.ts) e importación (actions.ts)
   components/       # UI: componentes reutilizables
     ui.ts           # Clases compartidas de botones y campos
     page.tsx        # Estructura de cada pantalla: barra con icono, migas y acciones
@@ -49,6 +50,7 @@ src/
     projects/       # Lógica de proyectos: validación (Zod), etiquetas, límites y carga por id
     tasks/          # Lo mismo para tareas, más el tablero (board.ts) y el progreso (progress.ts)
     learning/       # Lo mismo para temas y elementos de aprendizaje
+    backup/         # Formato de la copia (schema.ts, Zod) y exportar/restaurar (backup.ts)
     dashboard/      # getDashboardStats(): cifras del dashboard en tres consultas
     db/             # Acceso a datos: lo único que habla con la base de datos
       index.ts      # getDb(): conexión de la app (lee DATABASE_URL)
@@ -113,6 +115,17 @@ UI (`app/`, `components/`) → Server Actions (`app/**/*actions.ts`: validan con
 - **Enlaces:** solo se aceptan `http` y `https`. Un enlace `javascript:` se mostraría como `<a href>` y ejecutaría código al pulsarlo. Se abren en otra pestaña con `rel="noopener noreferrer"`.
 - El progreso reutiliza `progressFromCounts` y `<ProgressBar>`; `countItemsByTopic` cuenta aprendidos y totales en una consulta.
 - El dashboard no incluye el aprendizaje por ahora.
+
+### Copia de seguridad
+
+- `/backup` (Issue #28). **Exportar** descarga `firednt-backup-AAAA-MM-DD.json` desde un Route Handler (`GET /backup/export`) con todas las tablas, los ids y las fechas.
+- **Formato:** `{ app: "firednt", version: 1, exportedAt, projects, tasks, learningTopics, learningItems }`. Si el formato cambia de forma incompatible, se sube `BACKUP_VERSION`.
+- **Importar** reemplaza todos los datos. Antes de tocar nada:
+  - exige marcar una casilla de confirmación (comprobada en el servidor);
+  - valida el archivo entero con Zod: tipos, estados, enlaces `http(s)`, ids únicos y que cada tarea o elemento apunte a un proyecto o tema de la copia.
+- **Errores:** se muestran en español (`z.locales.es()`) con la ruta del dato, p. ej. `tasks[2].status: …`, como máximo 5.
+- La restauración (`restoreBackup`) borra e inserta dentro de una transacción: si algo falla a mitad, la base de datos queda como estaba.
+- Las Server Actions aceptan como máximo 1 MB por defecto; `next.config.ts` lo sube a 10 MB para los archivos de copia.
 
 ## Diseño
 
