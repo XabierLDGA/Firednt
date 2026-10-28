@@ -6,12 +6,9 @@ import {
   text,
   type AnySQLiteColumn,
 } from "drizzle-orm/sqlite-core";
+import { PROJECT_STATUSES, TASK_STATUSES } from "./enums.ts";
 
-export const PROJECT_STATUSES = ["IDEA", "IN_PROGRESS", "PAUSED", "DONE"] as const;
-export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
-
-export const TASK_STATUSES = ["TODO", "DOING", "DONE"] as const;
-export type TaskStatus = (typeof TASK_STATUSES)[number];
+export * from "./enums.ts";
 
 // SQLite has no enum type: the `enum` option only narrows the TypeScript type,
 // so a CHECK constraint also enforces the allowed values in the database.

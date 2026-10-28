@@ -1,6 +1,6 @@
 # Arquitectura — firednt
 
-> Estado: esqueleto, layout y base de datos (Issues #1, #5 y #6). Este documento crecerá a medida que se añadan funcionalidades.
+> Estado: esqueleto, layout, base de datos y gestión de proyectos (Issues #1, #5, #6 y #7). Este documento crecerá a medida que se añadan funcionalidades.
 
 ## Stack
 
@@ -12,6 +12,7 @@
 | Lint | ESLint con `eslint-config-next` |
 | Tests | Vitest + Testing Library (entorno `jsdom`) |
 | Base de datos | SQLite local con Drizzle ORM y `@libsql/client` |
+| Validación | Zod (en el servidor, dentro de las Server Actions) |
 | Gestor de paquetes | npm |
 
 Motivos y alternativas: [ADR 0001](decisions/0001-stack-inicial.md) (stack) y [ADR 0002](decisions/0002-base-de-datos.md) (base de datos).
@@ -23,10 +24,16 @@ src/
   app/              # UI: rutas (App Router), cada carpeta es una URL
     layout.tsx      # Layout raíz: <html>, fuentes, metadatos y cabecera
     globals.css     # Tailwind y design tokens
-  components/       # UI: componentes reutilizables (cabecera, navegación)
+    projects/       # Páginas de proyectos y sus Server Actions (actions.ts)
+  components/       # UI: componentes reutilizables
+    ui.ts           # Clases compartidas de botones y campos
+    projects/       # Formulario, badge de estado, botón de eliminar
   lib/
     site.ts         # Constantes de la app (nombre visible)
+    projects/       # Lógica de proyectos: validación (Zod), etiquetas y límites
     db/             # Acceso a datos: lo único que habla con la base de datos
+      index.ts      # getDb(): conexión de la app (lee DATABASE_URL)
+      enums.ts      # Estados válidos, sin dependencias (usable en el navegador)
       schema.ts     # Tablas, tipos y restricciones
       client.ts     # createDb(url): conexión
       projects.ts   # Repositorio de proyectos (CRUD)
@@ -39,9 +46,17 @@ docs/               # Visión, arquitectura y ADRs
 
 ## Capas
 
-UI (`app/`, `components/`) → lógica y validación (Server Actions, a partir de #7) → acceso a datos (`lib/db/`) → SQLite.
+UI (`app/`, `components/`) → Server Actions (`app/**/actions.ts`: validan con `lib/projects/validation.ts`) → acceso a datos (`lib/db/`) → SQLite.
 
-Las funciones de acceso a datos reciben la conexión (`db`) como primer parámetro: la app usa la base de datos real y los tests una en memoria.
+- Las páginas leen datos directamente desde Server Components llamando a los repositorios con `getDb()`.
+- Las escrituras pasan siempre por una Server Action, que valida en el servidor, guarda y redirige.
+- Las funciones de acceso a datos reciben la conexión (`db`) como primer parámetro: la app usa la base de datos real y los tests una en memoria.
+- Los Client Components no importan `schema.ts` ni `validation.ts` (arrastrarían Drizzle y Zod al navegador). Las constantes compartidas viven en `lib/db/enums.ts` y `lib/projects/constants.ts`.
+
+### Next.js 16 y Cache Components
+
+- Las páginas de `/projects` exportan `instant = false` (en `app/projects/layout.tsx`): se renderizan en cada petición y pueden bloquear mientras leen la BD local, sin necesidad de `<Suspense>`.
+- Las rutas con parámetro (`/projects/[id]`) envían primero un esqueleto prerenderizado. Por eso un id inexistente muestra la página 404 con `noindex`, pero con código HTTP 200 (*soft 404*). Un 404 "real" requeriría comprobarlo en un Proxy.
 
 ## Convenciones
 
