@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DeleteProjectButton } from "@/components/projects/delete-project-button";
+import { ConfirmDeleteButton } from "@/components/confirm-delete-button";
 import { ProjectForm } from "@/components/projects/project-form";
 import { loadProjectOrNotFound } from "@/lib/projects/load";
 import { deleteProjectAction, updateProjectAction } from "../../actions";
@@ -28,9 +28,10 @@ export default async function EditProjectPage({
         <p className="mt-1 mb-4 text-sm text-fg-secondary">
           Se borrarán también todas sus tareas. No se puede deshacer.
         </p>
-        <DeleteProjectButton
+        <ConfirmDeleteButton
           action={deleteProjectAction.bind(null, project.id)}
-          projectName={project.name}
+          confirmMessage={`¿Eliminar "${project.name}" y todas sus tareas? Esta acción no se puede deshacer.`}
+          label="Eliminar proyecto"
         />
       </section>
     </main>

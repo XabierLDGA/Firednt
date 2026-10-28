@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import type { ProjectFormState } from "@/app/projects/actions";
+import { Field } from "@/components/field";
 import { buttonStyles, inputStyles } from "@/components/ui";
 import { PROJECT_STATUSES } from "@/lib/db/enums";
 import type { Project } from "@/lib/db/schema";
@@ -88,34 +89,5 @@ export function ProjectForm({ action, project, submitLabel, cancelHref }: Projec
         </Link>
       </div>
     </form>
-  );
-}
-
-function Field({
-  label,
-  htmlFor,
-  hint,
-  errors,
-  children,
-}: {
-  label: string;
-  htmlFor: string;
-  hint?: string;
-  errors?: string[];
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={htmlFor} className="text-sm font-medium text-fg-secondary">
-        {label}
-        {hint && <span className="ml-1 font-normal text-fg-tertiary">· {hint}</span>}
-      </label>
-      {children}
-      {errors && (
-        <p id={`${htmlFor}-error`} className="text-sm text-danger">
-          {errors.join(" ")}
-        </p>
-      )}
-    </div>
   );
 }
