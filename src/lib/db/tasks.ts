@@ -1,6 +1,6 @@
 import { and, asc, count, eq, max, ne, sql } from "drizzle-orm";
 import type { Db } from "./client.ts";
-import { tasks, type NewTask, type Task, type TaskStatus } from "./schema.ts";
+import { TASK_STATUSES, tasks, type NewTask, type Task, type TaskStatus } from "./schema.ts";
 
 export type TaskInput = Pick<NewTask, "title" | "description" | "status">;
 
@@ -26,6 +26,20 @@ export async function countTasksByProject(db: Db): Promise<Map<number, TaskCount
     .from(tasks)
     .groupBy(tasks.projectId);
   return new Map(rows.map(({ projectId, done, total }) => [projectId, { done, total }]));
+}
+
+// Tasks of all projects per status. Every status is present, even with 0.
+export async function countTasksByStatus(db: Db): Promise<Record<TaskStatus, number>> {
+  const rows = await db
+    .select({ status: tasks.status, total: count() })
+    .from(tasks)
+    .groupBy(tasks.status);
+  const counts = Object.fromEntries(TASK_STATUSES.map((status) => [status, 0])) as Record<
+    TaskStatus,
+    number
+  >;
+  for (const { status, total } of rows) counts[status] = total;
+  return counts;
 }
 
 export async function getTask(db: Db, id: number): Promise<Task | undefined> {
