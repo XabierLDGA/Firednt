@@ -23,6 +23,9 @@ import { countTasksByProject } from "@/lib/db/tasks";
 import { formatDate } from "@/lib/format";
 import { progressFromCounts } from "@/lib/tasks/progress";
 
+// Blocks while reading the local database; see app/projects/layout.tsx.
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Proyectos",
 };

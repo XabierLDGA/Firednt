@@ -10,6 +10,9 @@ import { getDb } from "@/lib/db";
 import { countItemsByTopic, listTopics } from "@/lib/db/learning";
 import { progressFromCounts } from "@/lib/tasks/progress";
 
+// Blocks while reading the local database; see app/learning/layout.tsx.
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Aprendizaje",
 };
