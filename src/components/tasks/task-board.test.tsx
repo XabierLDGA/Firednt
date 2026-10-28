@@ -10,7 +10,10 @@ const { updateTaskStatusAction } = vi.hoisted(() => ({
   }),
 }));
 
-vi.mock("@/app/projects/task-actions", () => ({ updateTaskStatusAction }));
+vi.mock("@/app/projects/task-actions", () => ({
+  updateTaskStatusAction,
+  createTaskAction: vi.fn(async () => ({})),
+}));
 
 // Vitest globals are off, so Testing Library does not unmount between tests.
 afterEach(cleanup);
@@ -36,7 +39,7 @@ const tasks = [
 ];
 
 test("shows each task in the column of its status", () => {
-  render(<TaskBoard tasks={tasks} />);
+  render(<TaskBoard projectId={1} tasks={tasks} />);
 
   for (const [column, title] of [
     ["Pendiente", "Diseñar"],
@@ -49,9 +52,11 @@ test("shows each task in the column of its status", () => {
 });
 
 test("offers only the moves that exist for each column", () => {
-  render(<TaskBoard tasks={tasks} />);
+  render(<TaskBoard projectId={1} tasks={tasks} />);
 
-  const buttons = screen.getAllByRole("button").map((button) => button.getAttribute("aria-label"));
+  const buttons = screen
+    .getAllByRole("button", { name: /^Mover/ })
+    .map((button) => button.getAttribute("aria-label"));
   expect(buttons).toEqual([
     'Mover "Diseñar" a En curso',
     'Mover "Programar" a Pendiente',
@@ -61,7 +66,7 @@ test("offers only the moves that exist for each column", () => {
 });
 
 test("clicking a move button sends the new status for that task", async () => {
-  render(<TaskBoard tasks={tasks} />);
+  render(<TaskBoard projectId={1} tasks={tasks} />);
 
   fireEvent.click(screen.getByRole("button", { name: 'Mover "Programar" a Hecha' }));
 
@@ -69,4 +74,10 @@ test("clicking a move button sends the new status for that task", async () => {
   const [taskId, formData] = updateTaskStatusAction.mock.calls[0];
   expect(taskId).toBe(2);
   expect(formData.get("status")).toBe("DONE");
+});
+
+test("each column offers a quick add for new tasks", () => {
+  render(<TaskBoard projectId={1} tasks={tasks} />);
+
+  expect(screen.getAllByRole("button", { name: "Nuevo" })).toHaveLength(3);
 });
