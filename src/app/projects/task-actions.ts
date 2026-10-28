@@ -18,9 +18,10 @@ export type TaskFormState = {
   values?: TaskFormValues;
 };
 
-// Tasks are shown on the project page and its board; their progress also
-// on the project list.
+// Tasks are shown on the project page and its board; their counts and
+// progress also on the project list and the dashboard.
 function revalidateProjectTasks(projectId: number) {
+  revalidatePath("/");
   revalidatePath("/projects");
   revalidatePath(`/projects/${projectId}`);
   revalidatePath(`/projects/${projectId}/board`);

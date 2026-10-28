@@ -1,15 +1,13 @@
-import { APP_NAME } from "@/lib/site";
+import { connection } from "next/server";
+import { Dashboard } from "@/components/dashboard/dashboard";
+import { getDashboardStats } from "@/lib/dashboard/stats";
+import { getDb } from "@/lib/db";
 
-export default function Home() {
-  return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
-      <h1 className="text-2xl font-semibold tracking-tight">{APP_NAME}</h1>
-      <p className="max-w-md text-lg text-fg-secondary">
-        Un sitio sencillo donde ver todos tus proyectos y el estado de cada uno.
-      </p>
-      <span className="rounded-sm border border-line px-2 py-0.5 text-sm text-fg-tertiary">
-        En construcción
-      </span>
-    </main>
-  );
+// Reads the local database on every request, like the project pages.
+export const instant = false;
+
+export default async function Home() {
+  await connection(); // read the database at request time, never at build time
+  const stats = await getDashboardStats(getDb());
+  return <Dashboard stats={stats} />;
 }
