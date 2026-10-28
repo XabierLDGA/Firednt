@@ -91,6 +91,17 @@ describe("updateTaskAction", () => {
     });
   });
 
+  test("a new status puts the task last in its column", async () => {
+    const task = await createTask(db, projectId, { title: "Mover" });
+    await createTask(db, projectId, { title: "Otra" });
+
+    await expect(
+      updateTaskAction(task.id, {}, form({ title: "Mover", status: "DONE" })),
+    ).rejects.toThrow("REDIRECT");
+
+    expect(await getTask(db, task.id)).toMatchObject({ status: "DONE", position: 2 });
+  });
+
   test("returns errors for invalid input without changing the task", async () => {
     const task = await createTask(db, projectId, { title: "Original" });
 
@@ -112,6 +123,15 @@ describe("updateTaskAction", () => {
 });
 
 describe("updateTaskStatusAction", () => {
+  test("moves the task to the end of its new column", async () => {
+    const task = await createTask(db, projectId, { title: "Mover" });
+    await createTask(db, projectId, { title: "Otra" });
+
+    await updateTaskStatusAction(task.id, form({ status: "DOING" }));
+
+    expect(await getTask(db, task.id)).toMatchObject({ status: "DOING", position: 2 });
+  });
+
   test("changes only the status", async () => {
     const task = await createTask(db, projectId, { title: "Tarea", description: "D" });
 
