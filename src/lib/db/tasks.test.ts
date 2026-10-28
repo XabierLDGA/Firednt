@@ -1,8 +1,8 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, test } from "vitest";
 import type { Db } from "./client.ts";
-import { createProject } from "./projects.ts";
-import { createTask, deleteTask, listTasks, updateTask } from "./tasks.ts";
+import { createProject, deleteProject } from "./projects.ts";
+import { createTask, deleteTask, getTask, listTasks, updateTask } from "./tasks.ts";
 import { createTestDb } from "./test-db.ts";
 
 let db: Db;
@@ -35,6 +35,13 @@ describe("tasks data access", () => {
     expect(titles).toEqual(["Mine"]);
   });
 
+  test("gets a task by id, or undefined when missing", async () => {
+    const task = await createTask(db, projectId, { title: "Find me" });
+
+    expect(await getTask(db, task.id)).toMatchObject({ title: "Find me", projectId });
+    expect(await getTask(db, 999)).toBeUndefined();
+  });
+
   test("updates the status of a task", async () => {
     const task = await createTask(db, projectId, { title: "Work" });
 
@@ -49,6 +56,14 @@ describe("tasks data access", () => {
     expect(await deleteTask(db, task.id)).toBe(true);
     expect(await deleteTask(db, task.id)).toBe(false);
     expect(await listTasks(db, projectId)).toEqual([]);
+  });
+
+  test("deleting a project deletes its tasks", async () => {
+    const task = await createTask(db, projectId, { title: "Goes away" });
+
+    await deleteProject(db, projectId);
+
+    expect(await getTask(db, task.id)).toBeUndefined();
   });
 
   test("the database rejects a task for a missing project", async () => {

@@ -1,6 +1,6 @@
 # Arquitectura — firednt
 
-> Estado: esqueleto, layout, base de datos y gestión de proyectos (Issues #1, #5, #6 y #7). Este documento crecerá a medida que se añadan funcionalidades.
+> Estado: esqueleto, layout, base de datos y gestión de proyectos y tareas (Issues #1, #5, #6, #7 y #8). Este documento crecerá a medida que se añadan funcionalidades.
 
 ## Stack
 
@@ -24,13 +24,18 @@ src/
   app/              # UI: rutas (App Router), cada carpeta es una URL
     layout.tsx      # Layout raíz: <html>, fuentes, metadatos y cabecera
     globals.css     # Tailwind y design tokens
-    projects/       # Páginas de proyectos y sus Server Actions (actions.ts)
+    projects/       # Páginas de proyectos y tareas; Server Actions en actions.ts y task-actions.ts
   components/       # UI: componentes reutilizables
     ui.ts           # Clases compartidas de botones y campos
-    projects/       # Formulario, badge de estado, botón de eliminar
+    field.tsx       # Etiqueta + campo + error de formulario
+    confirm-delete-button.tsx  # Botón de eliminar con confirmación
+    projects/       # Formulario y badge de estado de proyectos
+    tasks/          # Lista, alta rápida, selector de estado y formulario de tareas
   lib/
     site.ts         # Constantes de la app (nombre visible)
-    projects/       # Lógica de proyectos: validación (Zod), etiquetas y límites
+    ids.ts          # parseId(): ids de la URL a número
+    projects/       # Lógica de proyectos: validación (Zod), etiquetas, límites y carga por id
+    tasks/          # Lo mismo para tareas
     db/             # Acceso a datos: lo único que habla con la base de datos
       index.ts      # getDb(): conexión de la app (lee DATABASE_URL)
       enums.ts      # Estados válidos, sin dependencias (usable en el navegador)
@@ -46,17 +51,23 @@ docs/               # Visión, arquitectura y ADRs
 
 ## Capas
 
-UI (`app/`, `components/`) → Server Actions (`app/**/actions.ts`: validan con `lib/projects/validation.ts`) → acceso a datos (`lib/db/`) → SQLite.
+UI (`app/`, `components/`) → Server Actions (`app/**/*actions.ts`: validan con `lib/*/validation.ts`) → acceso a datos (`lib/db/`) → SQLite.
 
 - Las páginas leen datos directamente desde Server Components llamando a los repositorios con `getDb()`.
-- Las escrituras pasan siempre por una Server Action, que valida en el servidor, guarda y redirige.
+- Las escrituras pasan siempre por una Server Action, que valida en el servidor, guarda y redirige (o, en el alta rápida y el cambio de estado de tareas, revalida la página para quedarse en ella).
 - Las funciones de acceso a datos reciben la conexión (`db`) como primer parámetro: la app usa la base de datos real y los tests una en memoria.
-- Los Client Components no importan `schema.ts` ni `validation.ts` (arrastrarían Drizzle y Zod al navegador). Las constantes compartidas viven en `lib/db/enums.ts` y `lib/projects/constants.ts`.
+- Los Client Components no importan `schema.ts` ni `validation.ts` (arrastrarían Drizzle y Zod al navegador). Las constantes compartidas viven en `lib/db/enums.ts` y `lib/*/constants.ts`.
 
 ### Next.js 16 y Cache Components
 
 - Las páginas de `/projects` exportan `instant = false` (en `app/projects/layout.tsx`): se renderizan en cada petición y pueden bloquear mientras leen la BD local, sin necesidad de `<Suspense>`.
-- Las rutas con parámetro (`/projects/[id]`) envían primero un esqueleto prerenderizado. Por eso un id inexistente muestra la página 404 con `noindex`, pero con código HTTP 200 (*soft 404*). Un 404 "real" requeriría comprobarlo en un Proxy.
+- Las rutas con parámetro (`/projects/[id]`, `/projects/[id]/tasks/[taskId]/edit`) envían primero un esqueleto prerenderizado. Por eso un id inexistente muestra la página 404 con `noindex`, pero con código HTTP 200 (*soft 404*). Un 404 "real" requeriría comprobarlo en un Proxy.
+
+### Tareas
+
+- Se gestionan desde el detalle del proyecto: alta rápida (solo título, estado "Pendiente"), cambio de estado con un desplegable que guarda al cambiar y una página de edición para título, descripción, estado y borrado.
+- La edición carga la tarea con `loadTaskOrNotFound(projectId, taskId)`: si la tarea es de otro proyecto, responde 404. Así una URL no puede mezclar proyectos.
+- Al borrar un proyecto, la base de datos borra sus tareas (`ON DELETE CASCADE`).
 
 ## Convenciones
 
