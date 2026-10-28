@@ -20,6 +20,9 @@ describe("SiteHeader", () => {
     expect(
       screen.getByRole("link", { name: "Proyectos" }).getAttribute("href"),
     ).toBe("/projects");
+    expect(
+      screen.getByRole("link", { name: "Aprendizaje" }).getAttribute("href"),
+    ).toBe("/learning");
   });
 
   test("marks the current section with aria-current", () => {

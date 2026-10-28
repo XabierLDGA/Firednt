@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconBriefcase, IconDashboard } from "@/components/icons";
+import { IconBriefcase, IconDashboard, IconSchool } from "@/components/icons";
 import { TAG_CLASSES } from "@/components/tag";
 import type { TagColor } from "@/lib/colors";
 
 const links: { href: string; label: string; Icon: typeof IconDashboard; color: TagColor }[] = [
   { href: "/", label: "Dashboard", Icon: IconDashboard, color: "gray" },
   { href: "/projects", label: "Proyectos", Icon: IconBriefcase, color: "orange" },
+  { href: "/learning", label: "Aprendizaje", Icon: IconSchool, color: "green" },
 ];
 
 // "/" only matches itself; other sections also match their subpages

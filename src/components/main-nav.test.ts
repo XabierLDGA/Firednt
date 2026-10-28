@@ -8,6 +8,8 @@ test.each([
   ["/projects", "/projects/123", true],
   ["/projects", "/projectsx", false],
   ["/projects", "/", false],
+  ["/learning", "/learning/7/edit", true],
+  ["/learning", "/projects", false],
 ])("isActivePath(%s, %s) -> %s", (href, pathname, expected) => {
   expect(isActivePath(href, pathname)).toBe(expected);
 });
