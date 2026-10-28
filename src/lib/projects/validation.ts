@@ -1,9 +1,7 @@
 import { z } from "zod";
-import { PROJECT_STATUSES } from "@/lib/db/schema";
+import { PROJECT_STATUSES } from "@/lib/db/enums";
 import type { ProjectInput } from "@/lib/db/projects";
-
-export const PROJECT_NAME_MAX = 100;
-export const PROJECT_DESCRIPTION_MAX = 500;
+import { PROJECT_DESCRIPTION_MAX, PROJECT_NAME_MAX } from "./constants";
 
 const projectFormSchema = z.object({
   name: z

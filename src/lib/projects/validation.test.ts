@@ -1,10 +1,6 @@
 import { describe, expect, test } from "vitest";
-import {
-  PROJECT_DESCRIPTION_MAX,
-  PROJECT_NAME_MAX,
-  parseProjectForm,
-  parseProjectId,
-} from "./validation";
+import { PROJECT_DESCRIPTION_MAX, PROJECT_NAME_MAX } from "./constants";
+import { parseProjectForm, parseProjectId } from "./validation";
 
 function form(values: Record<string, string>): FormData {
   const data = new FormData();
