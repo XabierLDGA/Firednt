@@ -23,6 +23,9 @@ describe("SiteHeader", () => {
     expect(
       screen.getByRole("link", { name: "Aprendizaje" }).getAttribute("href"),
     ).toBe("/learning");
+    expect(
+      screen.getByRole("link", { name: "Copia de seguridad" }).getAttribute("href"),
+    ).toBe("/backup");
   });
 
   test("marks the current section with aria-current", () => {
